@@ -19,13 +19,22 @@ const gameInit = () => {
   openedCard.value = [];
 }
 
-const clickHandler = (idx) => {    
+let timer = null;
+const clickHandler = (idx) => {
   openedCard.value.push(idx);
-  
-  // 一秒後將 openedCard 清空 (牌面覆蓋回去)
-  window.setTimeout(() => {
+  if(timer) {
+    window.clearTimeout(timer);
+  }
+  if(openedCard.value.length >= 2 && (cards.value[openedCard.value[0]] === cards.value[openedCard.value[1]])) {
+    cards.value[openedCard.value[0]] = null;
+    cards.value[openedCard.value[1]] = null;
     openedCard.value = [];
-  }, 1000);
+  } else {
+    // 一秒後將 openedCard 清空 (牌面覆蓋回去)
+    timer = window.setTimeout(() => {
+      openedCard.value = [];
+    }, 1000);
+  }
 }
 </script>
 
@@ -49,7 +58,7 @@ const clickHandler = (idx) => {
         }"
         @click="clickHandler(idx)">
         <div class="flip-card-inner" v-if="cards[idx] > 0">
-          <div class="flip-card-front"></div>
+          <div class="flip-card-front">{{ n }}</div>
           <div class="flip-card-back">
             <img :src="`./img/cat-0${n}.jpg`" alt="">
           </div>
