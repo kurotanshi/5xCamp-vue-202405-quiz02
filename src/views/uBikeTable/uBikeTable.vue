@@ -1,5 +1,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import SearchVue from './components/search.vue';
+import uBikeTableVue from './components/uBikeTable.vue';
+import PaginationVue from './components/pagination.vue';
 // 修改這份 YouBike 即時資訊表，並加上
 // 1. 站點名稱搜尋
 // 2. 目前可用車輛 / 總停車格 的排序功能
@@ -36,6 +39,9 @@ fetch('https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediat
     uBikeStops.value = JSON.parse(data);
   });
 
+function setSearchText(nValue) {
+  searchText.value = nValue;
+}
 // 監聽搜尋文字，若有變動則將頁碼回歸第一頁
 watch(searchText, () => {
   currentPage.value = 1;
@@ -101,122 +107,36 @@ const setPage = page => {
   currentPage.value = page;
 };
 
-// 指定排序
-const setSort = sortType => {
-  if (sortType === currentSort.value) {
-    isSortDesc.value = !isSortDesc.value;
-  } else {
-    currentSort.value = sortType;
-    isSortDesc.value = false;
-  }
-};
-
-// 關鍵字 Highlight
-const keywordsHighlight = (text, keyword) => {
-  if(keyword === '') return text;
-  const reg = new RegExp(keyword, 'gi');
-  return text.replace(reg, `<span style="color: red;">${keyword}</span>`);
-};
+function setCurrentSort(nValue) {
+  currentSort.value = nValue;
+}
+function setSortDesc(nValue) {
+  isSortDesc.value = nValue;
+}
 </script>
 
 <template>
   <div class="app">
-    <p class="mb-3">
-      站點名稱搜尋: <input class="border" type="text" v-model="searchText">
-    </p>
+    <SearchVue :searchText="searchText" @setSearchText="setSearchText"></SearchVue>
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th @click="setSort('sno')">
-            #
-            <span v-show="currentSort === 'sno'">
-              <i class="fa" :class="isSortDesc ? 'fa-sort-desc' : 'fa-sort-asc'" aria-hidden="true"></i>
-            </span>
-          </th>
-          <th>
-            場站名稱
-          </th>
-          <th>
-            場站區域
-          </th>
-          <th @click="setSort('available_return_bikes')" class="pointer">
-            目前可用車輛
-            <span v-show="currentSort === 'available_return_bikes'">
-              <i class="fa" :class="isSortDesc ? 'fa-sort-desc' : 'fa-sort-asc'" aria-hidden="true"></i>
-            </span>
-          </th>
-          <th @click="setSort('total')" class="pointer">
-            總停車格
-            <span v-show="currentSort === 'total'">
-              <i class="fa" :class="isSortDesc ? 'fa-sort-desc' : 'fa-sort-asc'" aria-hidden="true"></i>
-            </span>
-          </th>
-          <th>
-            資料更新時間
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 替換成 slicedUbikeStops -->
-        <tr v-for="s in slicedUbikeStops" :key="s.sno">
-          <td>{{ s.sno }}</td>
-          <td v-html="keywordsHighlight(s.sna, searchText)"></td>
-          <td>{{ s.sarea }}</td>
-          <td>{{ s.available_return_bikes }}</td>
-          <td>{{ s.total }}</td>
-          <td>{{ (s.mday) }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <uBikeTableVue :slicedUbikeStops="slicedUbikeStops" 
+                  :searchText="searchText"
+                  :currentSort="currentSort"
+                  :isSortDesc="isSortDesc"
+                  @setCurrentSort="setCurrentSort"
+                  @setSortDesc="setSortDesc"></uBikeTableVue>
   </div>
-
   <!-- 頁籤 -->
-  <nav v-if="pagerEnd > 0">
-    <ul class="pagination">
-
-      <li @click.prevent="setPage(1)" class="page-item">
-        <a class="page-link" href>第一頁</a>
-      </li>
-      <li @click.prevent="setPage(currentPage - 1)" class="page-item">
-        <a class="page-link" href>&lt;</a>
-      </li>
-
-      <li v-for="i in pagerEnd" :class="{ active: i + pagerAddAmount === currentPage }" :key="i"
-        @click.prevent="setPage(i + pagerAddAmount)" class="page-item">
-        <a class="page-link" href>{{ i + pagerAddAmount }}</a>
-      </li>
-
-      <li @click.prevent="setPage(currentPage + 1)" class="page-item">
-        <a class="page-link" href>&gt;</a>
-      </li>
-      <li @click.prevent="setPage(totalPageCount)" class="page-item">
-        <a class="page-link" href>最末頁</a>
-      </li>
-    </ul>
-  </nav>
+  <PaginationVue @setPage="setPage"
+              :currentPage="currentPage"
+              :pagerAddAmount="pagerAddAmount"
+              :totalPageCount="totalPageCount"
+              :pagerEnd="pagerEnd">
+  </PaginationVue>
 </template>
 
 <style lang="scss" scoped>
 .app {
   padding: 1rem;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-}
-
-@media (max-width: 768px) {
-  .sno {
-    max-width: 50px; word-wrap: break-word;
-  }
-  .table td, .table th {
-    padding: .5rem .25rem;
-  }
 }
 </style>
