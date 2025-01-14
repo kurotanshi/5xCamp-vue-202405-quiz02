@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import search from './components/search.vue';
 // 修改這份 YouBike 即時資訊表，並加上
 // 1. 站點名稱搜尋
 // 2. 目前可用車輛 / 總停車格 的排序功能
@@ -12,6 +13,14 @@ import { ref, computed, watch } from 'vue';
 // snaen(場站名稱英文)、aren(地址英文)、available_return_bikes(空位數量)、act(全站禁用狀態)、
 // srcUpdateTime(YouBike2.0系統發布資料更新的時間)、updateTime(大數據平台經過處理後將資料存入DB的時間)、
 // infoTime(各場站來源資料更新時間)、infoDate(各場站來源資料更新時間)
+
+// 修改 views/uBikeTable/uBikeTable.vue 檔案，並完成以下功能：
+
+// 將搜尋的部分拆出來變成子元件 views/uBikeTable/components/search.vue
+// 將表格的部分拆出來變成子元件 views/uBikeTable/components/uBikeTable.vue
+// 將分頁的部分拆出來變成子元件 views/uBikeTable/components/pagination.vue
+// 再將它們組合起來
+
 
 // 目前的排序選項
 const currentSort = ref('sno');
@@ -35,6 +44,10 @@ fetch('https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediat
   .then(data => {
     uBikeStops.value = JSON.parse(data);
   });
+
+const updateSearchText = (value) => {
+  searchText.value = value;
+}
 
 // 監聽搜尋文字，若有變動則將頁碼回歸第一頁
 watch(searchText, () => {
@@ -121,9 +134,7 @@ const keywordsHighlight = (text, keyword) => {
 
 <template>
   <div class="app">
-    <p class="mb-3">
-      站點名稱搜尋: <input class="border" type="text" v-model="searchText">
-    </p>
+    <search @updateSearch="updateSearchText"></search>
 
     <table class="table table-striped">
       <thead>
