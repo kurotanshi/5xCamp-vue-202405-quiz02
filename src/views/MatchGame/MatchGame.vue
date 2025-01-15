@@ -1,5 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { useGameStore } from '@/stores/gameStore.js';
+import {storeToRefs} from "pinia";
+
 
 // 試完成以下功能：
 //  1. 點擊卡片，卡片會翻開 (已完成)
@@ -8,16 +10,13 @@ import { ref } from 'vue';
 //  4. 當所有卡片都消失時，顯示「恭喜破關，再來一局？」的對話框，按下確定後重置遊戲
 //  5. 將卡片獨立抽出為 Card.vue 元件
 
-const cards = ref([]);
-const openedCard = ref([]);
 
-// 遊戲初始化，洗牌
-const gameInit = () => {
-  const numArr = [...new Array(16).keys()].map(i => ++i);
-  numArr.sort(() => Math.random() - 0.5);
-  cards.value = numArr.map(d => (d % 8) + 1);
-  openedCard.value = [];
-}
+const gameStore = useGameStore();
+const { cards, openedCard } = storeToRefs(gameStore);
+
+const { gameInit } = gameStore;
+gameInit();
+
 
 const clickHandler = (idx) => {    
   openedCard.value.push(idx);
@@ -40,7 +39,6 @@ const clickHandler = (idx) => {
     </div>
 
     <div class="rounded-xl mx-auto border-4 mt-12 grid grid-flow-col p-10 w-[900px] gap-2 grid-rows-4">
-      
       <div 
         v-for="(n, idx) in cards"
         class="flip-card"
@@ -49,8 +47,9 @@ const clickHandler = (idx) => {
         }"
         @click="clickHandler(idx)">
         <div class="flip-card-inner" v-if="cards[idx] > 0">
-          <div class="flip-card-front"></div>
+          <div class="flip-card-front"> {{n}}</div>
           <div class="flip-card-back">
+           
             <img :src="`./img/cat-0${n}.jpg`" alt="">
           </div>
         </div>
