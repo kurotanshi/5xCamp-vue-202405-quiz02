@@ -1,7 +1,6 @@
 <script setup>
 import { useGameStore } from '@/stores/gameStore.js';
-import {storeToRefs} from "pinia";
-
+import Card from "@/views/MatchGame/Card.vue";
 
 // 試完成以下功能：
 //  1. 點擊卡片，卡片會翻開 (已完成)
@@ -12,20 +11,8 @@ import {storeToRefs} from "pinia";
 
 
 const gameStore = useGameStore();
-const { cards, openedCard } = storeToRefs(gameStore);
-
 const { gameInit } = gameStore;
 gameInit();
-
-
-const clickHandler = (idx) => {    
-  openedCard.value.push(idx);
-  
-  // 一秒後將 openedCard 清空 (牌面覆蓋回去)
-  window.setTimeout(() => {
-    openedCard.value = [];
-  }, 1000);
-}
 </script>
 
 <template>
@@ -39,22 +26,7 @@ const clickHandler = (idx) => {
     </div>
 
     <div class="rounded-xl mx-auto border-4 mt-12 grid grid-flow-col p-10 w-[900px] gap-2 grid-rows-4">
-      <div 
-        v-for="(n, idx) in cards"
-        class="flip-card"
-        :class="{
-          'open': openedCard.includes(idx)
-        }"
-        @click="clickHandler(idx)">
-        <div class="flip-card-inner" v-if="cards[idx] > 0">
-          <div class="flip-card-front"> {{n}}</div>
-          <div class="flip-card-back">
-           
-            <img :src="`./img/cat-0${n}.jpg`" alt="">
-          </div>
-        </div>
-      </div>
-
+      <card></card>
     </div>
   </div>
 </template>

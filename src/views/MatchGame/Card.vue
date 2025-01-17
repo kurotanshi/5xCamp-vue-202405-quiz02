@@ -1,5 +1,22 @@
-﻿<script>
-import { ref } from 'vue';
+﻿<script setup>
+import { useGameStore } from '@/stores/gameStore.js';
+import {storeToRefs} from "pinia";
+
+
+const gameStore = useGameStore();
+const { cards, openedCard } = storeToRefs(gameStore);
+
+const { gameInit } = gameStore;
+gameInit();
+
+const clickHandler = (idx) => {
+  openedCard.value.push(idx);
+
+  // 一秒後將 openedCard 清空 (牌面覆蓋回去)
+  window.setTimeout(() => {
+    openedCard.value = [];
+  }, 1000);
+}
 </script>
 <template>
   <div
@@ -18,3 +35,5 @@ import { ref } from 'vue';
     </div>
   </div>
 </template>
+
+<style scoped src="./MatchGame.css"></style>
