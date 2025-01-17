@@ -9,13 +9,27 @@ const { cards, openedCard } = storeToRefs(gameStore);
 const { gameInit } = gameStore;
 gameInit();
 
-const clickHandler = (idx) => {
+const clickHandler = (idx ) => {
   openedCard.value.push(idx);
+  console.log(openedCard.value);
 
-  // 一秒後將 openedCard 清空 (牌面覆蓋回去)
-  window.setTimeout(() => {
-    openedCard.value = [];
-  }, 1000);
+  if(openedCard.value.length === 2){
+    if(cards.value[openedCard.value[0]] === cards.value[openedCard.value[1]]){
+      setTimeout(() => {
+        cards.value[openedCard.value[0]] = 0;
+        cards.value[openedCard.value[1]] = 0;
+        openedCard.value = [];
+        }, 1000);
+      console.log('match');
+    }else{
+      console.log('not match');
+      setTimeout(() => {
+        openedCard.value = [];
+      }, 1000);
+    }
+    console.log('2 cards');
+  }
+  console.log('length', openedCard.value.length);
 }
 </script>
 <template>
@@ -25,7 +39,7 @@ const clickHandler = (idx) => {
       :class="{
           'open': openedCard.includes(idx)
         }"
-      @click="clickHandler(idx)">
+      @click="clickHandler(idx,n)">
     <div class="flip-card-inner" v-if="cards[idx] > 0">
       <div class="flip-card-front"> {{n}}</div>
       <div class="flip-card-back">
