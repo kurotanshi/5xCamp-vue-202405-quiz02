@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 // 試完成以下功能：
 //  1. 點擊卡片，卡片會翻開 (已完成)
@@ -48,6 +48,18 @@ const checkMatch = () => {
     }, 1000);
   }
 }
+
+// Watch for changes in cards to check if all cards are gone
+watch(cards, (newCards) => {
+  if (newCards.every(card => card === 0)) {
+    if (confirm("恭喜破關，再來一局？")) {
+      gameInit();
+    }
+  }
+}, {deep: true});
+
+gameInit();
+
 </script>
 
 <template>
