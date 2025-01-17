@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import Search from "@/views/uBikeTable/search.vue";
 // 修改這份 YouBike 即時資訊表，並加上
 // 1. 站點名稱搜尋
 // 2. 目前可用車輛 / 總停車格 的排序功能
@@ -117,13 +118,22 @@ const keywordsHighlight = (text, keyword) => {
   const reg = new RegExp(keyword, 'gi');
   return text.replace(reg, `<span style="color: red;">${keyword}</span>`);
 };
+
+const handleSearchTextChange = (val) => {
+  console.log(val);
+  searchText.value = val; // 更新父组件的值
+};
 </script>
 
 <template>
   <div class="app">
-    <p class="mb-3">
-      站點名稱搜尋: <input class="border" type="text" v-model="searchText">
-    </p>
+    <Search
+        :name="searchName"
+        @searchText="handleSearchTextChange"
+      />
+<!--    <p class="mb-3">-->
+<!--      站點名稱搜尋: <input class="border" type="text" v-model="searchText">-->
+<!--    </p>-->
 
     <table class="table table-striped">
       <thead>
