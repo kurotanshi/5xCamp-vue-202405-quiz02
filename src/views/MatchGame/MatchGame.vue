@@ -19,13 +19,34 @@ const gameInit = () => {
   openedCard.value = [];
 }
 
+const lastOpenedCard = ref([]);
+
 const clickHandler = (idx) => {    
   openedCard.value.push(idx);
+  lastOpenedCard.value.push(idx);
+
+  // 如果已經有兩張卡片被翻開，檢查是否相同
+  if (lastOpenedCard.value.length === 2) {
+    checkMatch();
+    lastOpenedCard.value = [];
+  }
   
   // 一秒後將 openedCard 清空 (牌面覆蓋回去)
   window.setTimeout(() => {
     openedCard.value = [];
   }, 1000);
+}
+
+const checkMatch = () => {
+  const idx1 = lastOpenedCard.value[0];
+  const idx2 = lastOpenedCard.value[1];
+  if (cards.value[idx1] === cards.value[idx2]) {
+    // 相同，消失
+    window.setTimeout(() => {
+      cards.value[idx1] = 0;
+      cards.value[idx2] = 0;
+    }, 1000);
+  }
 }
 </script>
 
@@ -43,13 +64,14 @@ const clickHandler = (idx) => {
       
       <div 
         v-for="(n, idx) in cards"
+        :key="idx"
         class="flip-card"
         :class="{
           'open': openedCard.includes(idx)
         }"
         @click="clickHandler(idx)">
         <div class="flip-card-inner" v-if="cards[idx] > 0">
-          <div class="flip-card-front"></div>
+          <div class="flip-card-front">{{n}}</div>
           <div class="flip-card-back">
             <img :src="`./img/cat-0${n}.jpg`" alt="">
           </div>
