@@ -20,16 +20,12 @@ const clickHandler = (idx ) => {
         cards.value[openedCard.value[1]] = 0;
         openedCard.value = [];
         }, 1000);
-      console.log('match');
     }else{
-      console.log('not match');
       setTimeout(() => {
         openedCard.value = [];
       }, 1000);
     }
-    console.log('2 cards');
   }
-  console.log('length', openedCard.value.length);
 }
 </script>
 <template>
