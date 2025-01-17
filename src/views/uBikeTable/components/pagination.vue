@@ -25,12 +25,39 @@
 import { computed, ref } from 'vue';
 
 const props = defineProps({
-  pagerEnd: Number,
   currentPage: Number,
   totalPageCount: Number,
-  pagerAddAmount: Number,
-  setPage: Function
+  updatePage: Function
 });
+
+const PAGINATION_MAX = 10;
+
+// 分頁的尾端
+const pagerEnd = computed(() => {
+  return props.totalPageCount <= PAGINATION_MAX
+    ? props.totalPageCount
+    : PAGINATION_MAX;
+});
+
+// 分頁的位移，用來確保目前的頁碼固定出現在中間
+const pagerAddAmount = computed(() => {
+  const tmp =
+    props.totalPageCount <= PAGINATION_MAX
+      ? 0
+      : props.currentPage + 4 - pagerEnd.value;
+  return tmp <= 0
+    ? 0
+    : props.totalPageCount - (PAGINATION_MAX + tmp) < 0
+      ? props.totalPageCount - PAGINATION_MAX
+      : tmp;
+});
+
+const setPage = (page) => {
+  if (page < 1 || page > props.totalPageCount) {
+    return;
+  }
+  props.updatePage(page);
+};
 </script>
 
 <style scoped>
