@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
+import Card from './components/Card.vue';
 
 // 試完成以下功能：
 //  1. 點擊卡片，卡片會翻開 (已完成)
@@ -74,22 +75,14 @@ gameInit();
 
     <div class="rounded-xl mx-auto border-4 mt-12 grid grid-flow-col p-10 w-[900px] gap-2 grid-rows-4">
       
-      <div 
+      <Card 
         v-for="(n, idx) in cards"
         :key="idx"
-        class="flip-card"
-        :class="{
-          'open': openedCard.includes(idx)
-        }"
-        @click="clickHandler(idx)">
-        <div class="flip-card-inner" v-if="cards[idx] > 0">
-          <div class="flip-card-front">{{n}}</div>
-          <div class="flip-card-back">
-            <img :src="`./img/cat-0${n}.jpg`" alt="">
-          </div>
-        </div>
-      </div>
-
+        :value="n"
+        :isOpen="openedCard.includes(idx)"
+        :index="idx"
+        @click="clickHandler"/>
+      
     </div>
   </div>
 </template>
