@@ -121,7 +121,7 @@ const keywordsHighlight = (text, keyword) => {
 
 const handleSearchTextChange = (val) => {
   console.log(val);
-  searchText.value = val; // 更新父组件的值
+  searchText.value = val; 
 };
 </script>
 
@@ -131,10 +131,6 @@ const handleSearchTextChange = (val) => {
         :name="searchName"
         @searchText="handleSearchTextChange"
       />
-<!--    <p class="mb-3">-->
-<!--      站點名稱搜尋: <input class="border" type="text" v-model="searchText">-->
-<!--    </p>-->
-
     <table class="table table-striped">
       <thead>
         <tr>
